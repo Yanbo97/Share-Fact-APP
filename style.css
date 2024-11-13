@@ -17,6 +17,9 @@ h1 {
   line-height: 1;
   margin-top: 6px;
 }
+.hidden {
+  display: none !important;
+}
 .container {
   max-width: 1500px;
   margin: 0 auto;
