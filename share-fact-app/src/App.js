@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import supabase from "./supabase";
 import "./style.css";
 
 const initialFacts = [
@@ -50,18 +51,33 @@ const initialFacts = [
 
 function App() {
   const [showForm, setShowForm] = useState(false);
-  const [facts, setFacts] = useState(initialFacts);
+  const [facts, setFacts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(function () {
+    async function getFact() {
+      setIsLoading(true);
+      const { data: facts, error } = await supabase.from("facts").select("*");
+      setFacts(facts);
+      setIsLoading(false);
+    }
+    getFact();
+  }, []);
   return (
     <>
       <Header showForm={showForm} setShowForm={setShowForm} />
-      {showForm ? <NewFactForm setFacts={setFacts} /> : null}
+      {showForm ? (
+        <NewFactForm setFacts={setFacts} setShowForm={setShowForm} />
+      ) : null}
 
       <main className="main">
         <CategoryFilter />
-        <FactList facts={facts} />
+        {isLoading ? <Loader /> : <FactList facts={facts} />}
       </main>
     </>
   );
+}
+function Loader() {
+  return <p className="message">Loading...</p>;
 }
 function Header({ showForm, setShowForm }) {
   const appTitle = "Today I Learned";
@@ -103,7 +119,7 @@ function isValidHttpUrl(string) {
 
   return url.protocol === "http:" || url.protocol === "https:";
 }
-function NewFactForm({ setFacts }) {
+function NewFactForm({ setFacts, setShowForm }) {
   const [text, setText] = useState("");
   const [source, setSource] = useState("");
   const [category, setCategory] = useState("");
@@ -121,9 +137,13 @@ function NewFactForm({ setFacts }) {
         votesInteresting: 0,
         votesMindblowing: 0,
         votesFalse: 0,
-        createdIn: new DataTransfer().getCurrentYear(),
+        createdIn: new Date().getFullYear(),
       };
-      setFacts([]);
+      setFacts((facts) => [newFact, ...facts]);
+      setText("");
+      setSource("");
+      setCategory("");
+      setShowForm(false);
     }
   }
   return (
