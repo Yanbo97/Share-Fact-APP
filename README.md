@@ -1,10 +1,48 @@
-# Fact Sharing Application
+# Yanbo Guan - Fact Sharing Application
 
 A dynamic fact-sharing platform where users can share and discover interesting facts across various categories.
 
 ## Live Demo
 
-Visit the live application: [Today I Learned App](https://shareafact-jason.netlify.app/)
+Visit the live application: [Share a Fact App](https://shareafact-jason.netlify.app/)
+
+## Application Architecture
+
+The following diagram illustrates the high-level architecture of the application:
+
+```mermaid
+flowchart TB
+    subgraph Frontend
+        UI[User Interface]
+        RC[React Components]
+        SM[State Management]
+        UI --> RC
+        RC --> SM
+    end
+
+    subgraph Backend[Supabase Backend]
+        API[REST API]
+        RT[Real-time Subscriptions]
+        DB[(PostgreSQL Database)]
+        API --> DB
+        RT --> DB
+    end
+
+    SM <--> API
+    SM <--> RT
+
+    subgraph Features
+        FF[Fact Form]
+        FL[Fact List]
+        CF[Category Filter]
+        VS[Voting System]
+    end
+
+    RC --> FF
+    RC --> FL
+    RC --> CF
+    RC --> VS
+```
 
 ## Backend Architecture
 
